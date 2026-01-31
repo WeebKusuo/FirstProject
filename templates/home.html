@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Algerian Forest Fire Prediction</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --forest-dark: #1a3a2e;
+            --forest-medium: #2d5a4a;
+            --forest-light: #4a7c59;
+            --earth-brown: #8b5a3c;
+            --flame-orange: #ff6b35;
+            --flame-red: #d64045;
+            --sky-blue: #5da9e9;
+            --smoke-gray: #a8a8a8;
+            --light-cream: #fff8f0;
+            --danger-bg: rgba(214, 64, 69, 0.05);
+            --safe-bg: rgba(74, 124, 89, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background: linear-gradient(135deg, #1a3a2e 0%, #2d5a4a 50%, #4a7c59 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 107, 53, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(93, 169, 233, 0.06) 0%, transparent 50%);
+            pointer-events: none;
+            animation: breathe 8s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .container {
+            background: var(--light-cream);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 900px;
+            box-shadow: 
+                0 30px 90px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--forest-dark) 0%, var(--forest-medium) 100%);
+            padding: 50px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+            animation: patternMove 30s linear infinite;
+        }
+
+        @keyframes patternMove {
+            to { transform: translate(30px, 30px); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: clamp(32px, 5vw, 48px);
+            color: var(--light-cream);
+            margin-bottom: 12px;
+            letter-spacing: -1px;
+            animation: fadeIn 0.8s ease-out 0.2s backwards;
+        }
+
+        .subtitle {
+            font-size: clamp(14px, 2vw, 18px);
+            color: rgba(255, 248, 240, 0.8);
+            font-weight: 500;
+            animation: fadeIn 0.8s ease-out 0.4s backwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .icon-badge {
+            display: inline-block;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--flame-orange), var(--flame-red));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.4);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .form-content {
+            padding: 50px 40px;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 28px;
+            margin-bottom: 40px;
+        }
+
+        .input-group {
+            opacity: 0;
+            animation: slideInUp 0.5s ease-out forwards;
+        }
+
+        .input-group:nth-child(1) { animation-delay: 0.1s; }
+        .input-group:nth-child(2) { animation-delay: 0.15s; }
+        .input-group:nth-child(3) { animation-delay: 0.2s; }
+        .input-group:nth-child(4) { animation-delay: 0.25s; }
+        .input-group:nth-child(5) { animation-delay: 0.3s; }
+        .input-group:nth-child(6) { animation-delay: 0.35s; }
+        .input-group:nth-child(7) { animation-delay: 0.4s; }
+        .input-group:nth-child(8) { animation-delay: 0.45s; }
+        .input-group:nth-child(9) { animation-delay: 0.5s; }
+        .input-group:nth-child(10) { animation-delay: 0.55s; }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        label {
+            display: block;
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--forest-dark);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 2px solid rgba(45, 90, 74, 0.15);
+            background: white;
+            font-size: 16px;
+            font-family: 'Manrope', sans-serif;
+            color: var(--forest-dark);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--forest-medium);
+            box-shadow: 0 0 0 4px rgba(45, 90, 74, 0.08);
+            transform: translateY(-2px);
+        }
+
+        input:hover:not(:focus) {
+            border-color: rgba(45, 90, 74, 0.3);
+        }
+
+        .btn-container {
+            text-align: center;
+            opacity: 0;
+            animation: fadeIn 0.6s ease-out 0.5s forwards;
+        }
+
+        .btn {
+            padding: 18px 60px;
+            border: none;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--flame-orange) 0%, var(--flame-red) 100%);
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 0.5px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 107, 53, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .result {
+            margin-top: 40px;
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .result.safe {
+            background: var(--safe-bg);
+            color: var(--forest-medium);
+            border: 2px solid rgba(74, 124, 89, 0.2);
+        }
+
+        .result.danger {
+            background: var(--danger-bg);
+            color: var(--flame-red);
+            border: 2px solid rgba(214, 64, 69, 0.2);
+        }
+
+        .result-icon {
+            font-size: 32px;
+            animation: bounce 0.6s ease-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .info-banner {
+            background: linear-gradient(135deg, rgba(93, 169, 233, 0.08), rgba(74, 124, 89, 0.08));
+            padding: 20px 30px;
+            border-radius: 12px;
+            margin-bottom: 35px;
+            border-left: 4px solid var(--sky-blue);
+            opacity: 0;
+            animation: fadeIn 0.6s ease-out 0.3s forwards;
+        }
+
+        .info-banner p {
+            margin: 0;
+            color: var(--forest-dark);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .info-banner strong {
+            color: var(--forest-medium);
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 40px 30px;
+            }
+
+            .form-content {
+                padding: 40px 30px;
+            }
+
+            .input-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .btn {
+                width: 100%;
+                padding: 18px 40px;
+            }
+        }
+
+        /* Loading state */
+        .btn.loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="header-content">
+            <div class="icon-badge">🔥</div>
+            <h1>Algerian Forest Fire Prediction</h1>
+            <p class="subtitle">Advanced AI-powered wildfire risk assessment system</p>
+        </div>
+    </div>
+    
+    <div class="form-content">
+        <div class="info-banner">
+            <p><strong>📊 How it works:</strong> Enter current weather conditions and fire danger indices to receive an instant prediction of forest fire risk. Our model analyzes temperature, humidity, wind patterns, and established fire weather indices.</p>
+        </div>
+
+        <form action="{{ url_for('predict_datapoint') }}" method="post" id="predictionForm">
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>🌡️ Temperature (°C)</label>
+                    <div class="input-wrapper">
+                        <input type="number" step="any" name="Temperature" placeholder="e.g., 32" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>💧 Relative Humidity (%)</label>
+                    <div class="input-wrapper">
+                        <input type="number" step="any" name="RH" placeholder="e.g., 45" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>💨 Wind Speed (km/h)</label>
+                    <div class="input-wrapper">
+                        <input type="number" step="any" name="Ws" placeholder="e.g., 15" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>🌧️ Rain (mm)</label>
+                    <div class="input-wrapper">
+                        <input type="number" step="any" name="Rain" placeholder="e.g., 0" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>📈 FFMC</label>
+                    <div class="input-wrapper">
+                        <input type="number" step="any" name="FFMC" placeholder="e.g., 85.5" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>📉 DMC</label>
+                    <div class="input-wrapper">
+                        <input type="number" step="any" name="DMC" placeholder="e.g., 25.3" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>📊 DC</label>
+                    <div class="input-wrapper">
+                        <input type="number" step="any" name="DC" placeholder="e.g., 150.2" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>⚡ ISI</label>
+                    <div class="input-wrapper">
+                        <input type="number" step="any" name="ISI" placeholder="e.g., 8.7" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>🏷️ Classes</label>
+                    <div class="input-wrapper">
+                        <input type="text" name="Classes" placeholder="e.g., Classes" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>🗺️ Region</label>
+                    <div class="input-wrapper">
+                        <input type="text" name="Region" placeholder="e.g., Region" required>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="btn-container">
+                <button type="submit" class="btn">Analyze Fire Risk</button>
+            </div>
+        </form>
+
+        {% if results %}
+        <div class="result {% if results|string == 'Fire' or results|float > 0 %}danger{% else %}safe{% endif %}">
+            <span class="result-icon">{% if results|string == 'Fire' or results|float > 0 %}🔥{% else %}✅{% endif %}</span>
+            <span>FWI Prediction: {{ results }}</span>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Add smooth form submission with loading state
+    document.getElementById('predictionForm').addEventListener('submit', function(e) {
+        const btn = this.querySelector('.btn');
+        btn.classList.add('loading');
+        btn.textContent = '';
+    });
+
+    // Add subtle input validation feedback
+    document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', function() {
+            if (this.value) {
+                this.style.borderColor = 'var(--forest-medium)';
+            }
+        });
+    });
+</script>
+</body>
+</html>
